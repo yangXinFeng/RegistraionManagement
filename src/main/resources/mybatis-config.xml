@@ -8,7 +8,7 @@
     </settings>
 
     <mappers>
-        <package name="com.xf.registration.dao"/>
+<!--        <package name="com.xf.registration.dao"/>-->
     </mappers>
 
 </configuration>

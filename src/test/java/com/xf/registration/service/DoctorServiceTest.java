@@ -8,6 +8,9 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import javax.annotation.Resource;
 
+import java.text.ParseException;
+import java.util.Date;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,5 +28,17 @@ class DoctorServiceTest {
             logger.info(doctor);
         }
 
+    }
+
+    @Test
+    void queryDoctorByPartAndDate() throws ParseException {
+        SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = ft.parse("2018-1-22");
+//        Date date = new Date(2018-1900,1-1,22);
+        logger.info(date.toString());
+        List<Doctor> list = doctorService.queryDoctorByPartAndDate("00010001",date);
+        for(Doctor doctor:list){
+            logger.info(doctor);
+        }
     }
 }

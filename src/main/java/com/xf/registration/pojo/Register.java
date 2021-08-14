@@ -12,7 +12,7 @@ public class Register implements java.io.Serializable{
 	private static final long serialVersionUID = 1L;
 	private int id;
 	private Patient patient;
-	private int doctorId;
+	private Doctor doctor;
 	private java.util.Date date;
 
 

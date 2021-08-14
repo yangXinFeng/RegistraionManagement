@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xf.registration.dao.RegisterMapper">
+
+    <select id="queryDoctorByPatient" parameterType="int" resultMap="patientRecord">
+        select prr.ID,d.NAME,prr.DATE,dp.REMARK
+        from doc_doctor d
+                 join
+             (select r.ID, r.DATE,r.doctor_Id
+              from doc_register r
+              where user_ID = #{patientId}) prr
+             on d.ID = prr.doctor_Id
+                 join doc_part dp on dp.PART_CODE = d.PART_CODE
+        order by prr.DATE desc ;
+    </select>
+
+    <resultMap id="patientRecord" type="com.xf.registration.pojo.Register">
+        <id property="id" column="id"/>
+        <result property="date" column="date"/>
+        <association property="doctor" javaType="com.xf.registration.pojo.Doctor">
+            <result property="name" column="doctor_name"/>
+            <association property="part" javaType="com.xf.registration.pojo.Part">
+                <result property="remark" column="part_name"/>
+            </association>
+        </association>
+    </resultMap>
+
+
+
+
+</mapper>

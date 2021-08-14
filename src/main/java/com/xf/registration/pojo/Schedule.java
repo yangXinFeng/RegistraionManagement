@@ -13,8 +13,9 @@ public class Schedule implements java.io.Serializable{
 	private int id;
 	private int doctorId;
 	private java.util.Date date;
-	private int num;
-	private String workTimer ;
+	private int num1;
+	private int num2;
+	private int num3;
 
 
 }
