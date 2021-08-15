@@ -28,5 +28,7 @@ public class Doctor implements java.io.Serializable{
 	private int[] availableRegister = new int[CAN_REGISTER];
 	private int[] scheduleRegister = new int[CAN_REGISTER];
 
+	public Doctor(int id){this.id = id;}
+
 
 }

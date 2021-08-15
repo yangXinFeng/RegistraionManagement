@@ -1,6 +1,6 @@
 package com.xf.registration.controller;
 
-import com.alibaba.fastjson.JSON;
+import com.google.gson.Gson;
 import com.xf.registration.service.DoctorService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +17,6 @@ public class DoctorController {
     @ResponseBody
     @RequestMapping("/doctor")
     public String queryAllDoctor(){
-        return JSON.toJSONString(doctorService.queryAllDoctor());
+        return new Gson().toJson(doctorService.queryAllDoctor());
     }
 }

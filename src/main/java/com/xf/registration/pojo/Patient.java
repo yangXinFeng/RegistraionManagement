@@ -15,5 +15,7 @@ public class Patient implements java.io.Serializable{
 	private String phone;
 	private String address;
 
+	public Patient(int id){this.id = id;}
+
 	
 }

@@ -12,7 +12,7 @@ import java.util.List;
 public interface ScheduleMapper {
 
     @Insert("insert into doc_schedule(doctor_Id, date, num1,num2, num3) VALUES (#{doctor_id}, #{date}, #{num1},#{num2}, #{num3});")
-    int addSchedule(Schedule schedule);
+    int insertSchedule(Schedule schedule);
 
     @Select("select * from doc_schedule where doctor_Id = #{doctorId} and DATE = #{date,jdbcType=DATE};")
     Schedule selectSchedule(@Param("doctorId") int doctorId,@Param("date") Date date);

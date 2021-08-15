@@ -19,6 +19,7 @@
     <resultMap id="patientRecord" type="com.xf.registration.pojo.Register">
         <id property="id" column="id"/>
         <result property="date" column="date"/>
+        <result property="work_time" column="workTime"/>
         <association property="doctor" javaType="com.xf.registration.pojo.Doctor">
             <result property="name" column="doctor_name"/>
             <association property="part" javaType="com.xf.registration.pojo.Part">
@@ -26,6 +27,24 @@
             </association>
         </association>
     </resultMap>
+
+    <select id="countRegister" parameterType="com.xf.registration.pojo.Register" resultType="int">
+        select count(*) from doc_register
+        <where>
+            <if test="patient != null">
+                user_ID = #{patient.id}
+            </if>
+            <if test="doctor != null">
+                and doctor_Id = #{doctor.id}
+            </if>
+            <if test="date != null">
+                and DATE = #{date,jdbcType=DATE}
+            </if>
+            <if test="workTime != -1">
+                and work_time = #{workTime}
+            </if>
+        </where>
+    </select>
 
 
 

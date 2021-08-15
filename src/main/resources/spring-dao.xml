@@ -50,4 +50,51 @@
         <property name="basePackage" value="com.xf.registration.dao"/>
     </bean>
 
+
+    <!-- redis -->
+    <!-- 1、配置连接池信息 -->
+    <bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+        <!-- 最大连接数-->
+        <property name="maxTotal" value="50"></property>
+        <property name="maxIdle" value="5"></property>
+        <!-- 这里只是Spring整合Redis测试，配两个做个样子就得了-->
+    </bean>
+
+    <!--2、spring整合Jedis（Redis） 也就是配置连接工厂JedisConnectionFactory-->
+    <bean id="jedisConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
+        <!--需要自定义（指定）一些工厂属性配置信息-->
+        <!--        指定服务器地址-->
+        <property name="hostName" value="${jedis.hostName}"></property>
+        <!--        指定服务端口号-->
+        <property name="port" value="${jedis.port}"></property>
+        <!--        指定密码（Redis3之前可以不指定，之后都要）-->
+        <property name="password" value="${jedis.password}"></property>
+
+        <!--   自定义连接池配置：再把第一步配置好的连接池信息通过属性注入进来  如果不自定义会采用默认的连接池配置，工厂中有属性new JedisPoolConfig-->
+        <property name="poolConfig" ref="jedisPoolConfig"></property>
+    </bean>
+
+    <!--    3、配置RedisTemplate模板   把第二步配置好的连接工厂JedisConnectionFactory通过属性注入到RedisTemplate模板中-->
+    <bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate">
+        <property name="connectionFactory" ref="jedisConnectionFactory"></property>
+
+
+        <!--如下配置是为了之后的key和value的序列化操作，暂时不配制也是OK的-->
+        <property name="keySerializer">
+            <bean class="org.springframework.data.redis.serializer.StringRedisSerializer"></bean>
+        </property>
+        <property name="valueSerializer">
+            <bean class="org.springframework.data.redis.serializer.StringRedisSerializer"></bean>
+        </property>
+        <property name="hashKeySerializer">
+            <bean  class="org.springframework.data.redis.serializer.StringRedisSerializer"/>
+        </property>
+        <property name="hashValueSerializer">
+            <bean  class="org.springframework.data.redis.serializer.StringRedisSerializer"/>
+        </property>
+    </bean>
+
+
+
+
 </beans>
