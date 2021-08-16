@@ -12,8 +12,8 @@ import java.util.Map;
 
 public interface RegisterMapper {
 
-    @Select("select * from doc_patient where id in (select user_ID from doc_register where doctor_Id = #{doctorId} and DATE = #{date});")
-    List<Patient> queryPatientByDoctorAndDate(int doctorId, String date);
+    @Select("select * from doc_patient where id in (select user_ID from doc_register where doctor_Id = #{id} and DATE = #{date,jdbcType=DATE});")
+    List<Patient> queryPatientByDoctorAndDate(@Param("id") int doctorId, @Param("date") Date date);
 
 //    @Select("select count(*) from doc_register where doctor_Id = #{id} and DATE = #{date,jdbcType=DATE} and work_time = #{time};")
 //    int countRegisterByDoctorAndDate(@Param("id")int doctorId, @Param("date")Date date, @Param("time")int workTime);

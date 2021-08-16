@@ -5,7 +5,7 @@
 <mapper namespace="com.xf.registration.dao.RegisterMapper">
 
     <select id="queryDoctorByPatient" parameterType="int" resultMap="patientRecord">
-        select prr.ID,d.NAME,prr.DATE,dp.REMARK
+        select prr.ID id,d.NAME doctor_name,prr.DATE date,dp.REMARK part_name
         from doc_doctor d
                  join
              (select r.ID, r.DATE,r.doctor_Id

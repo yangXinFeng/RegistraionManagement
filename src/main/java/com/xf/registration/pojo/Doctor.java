@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.annotation.Resource;
+import java.util.Date;
 
 @Data
 @AllArgsConstructor
@@ -30,5 +31,18 @@ public class Doctor implements java.io.Serializable{
 
 	public Doctor(int id){this.id = id;}
 
-
+	public Doctor(int id, String name, String info, double price, String image, int sex, String email, String phone, String address, Date createDate, Part part, String dept) {
+		this.id = id;
+		this.name = name;
+		this.info = info;
+		this.price = price;
+		this.image = image;
+		this.sex = sex;
+		this.email = email;
+		this.phone = phone;
+		this.address = address;
+		this.createDate = createDate;
+		this.part = part;
+		this.dept = dept;
+	}
 }

@@ -15,5 +15,9 @@ public class Part implements java.io.Serializable{
 	private String name;
 	private String remark;
 
+	public Part(String partCode){
+		this.partCode = partCode;
+	}
+
 
 }

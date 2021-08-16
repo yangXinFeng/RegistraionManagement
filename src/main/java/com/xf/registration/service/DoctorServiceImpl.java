@@ -62,6 +62,79 @@ public class DoctorServiceImpl implements DoctorService {
             }else logger.info("find doctor by part from mysql,doctor size: null" );
         }
 
+        setAvailableRegisterForDoctor(list,date);
+        return list;
+    }
+
+    @Override
+    public List<Doctor> queryDoctorByName(String name, Date date) {
+        List<Doctor> list = doctorMapper.selectAllDoctor(name);
+        setAvailableRegisterForDoctor(list,date);
+
+        return list;
+    }
+
+    @Override
+    public List<Doctor> queryDoctorByName(String name) {
+        return doctorMapper.selectAllDoctor(name);
+    }
+
+    @Override
+    public int schedule(int doctorId, Date date, int[] num) {
+        // 0:fail
+        // 1:success
+        int res = 0;
+        Schedule schedule = scheduleMapper.selectSchedule(doctorId,date);
+
+        Schedule newSchedule = new Schedule(-1,doctorId,date,num[0],num[1],num[2]);
+
+        if(schedule == null){
+            res = scheduleMapper.insertSchedule(newSchedule);
+            logger.info("schedule: insert");
+        }else{
+            res = scheduleMapper.updateSchedule(newSchedule);
+            logger.info("schedule: update");
+        }
+        return res;
+    }
+
+    @Override
+    public int addDoctor(Doctor doctor) {
+        return doctorMapper.insertDoctor(doctor);
+    }
+
+    @Override
+    public int deleteDoctor(int doctorId) {
+        return doctorMapper.deleteDoctor(doctorId);
+    }
+
+    @Override
+    public int updateDoctor(Doctor doctor) {
+        return doctorMapper.updateDoctor(doctor);
+    }
+
+    @Override
+    public int updatePassword(int doctorId, String oldPassword, String newPassword) {
+        int res = 0;
+        String p = doctorMapper.getPasswordById(doctorId);
+        if (!p.equals(oldPassword)){
+            logger.info("updatePassword:oldPassword incorrect!");
+//            logger.info("true:"+p+" false:"+oldPassword);
+            res = 2;
+        }else{
+            res = doctorMapper.updatePassword(doctorId,newPassword);
+            logger.info("updatePassword:ing...");
+        }
+
+        return res;
+    }
+
+    @Override
+    public String getPassword(String phone) {
+        return doctorMapper.getPasswordByPhone(phone);
+    }
+
+    void setAvailableRegisterForDoctor(List<Doctor> list,Date date){
         for(Doctor doctor : list){
             int doctorId = doctor.getId();
             int[] num = new int[3];
@@ -107,26 +180,6 @@ public class DoctorServiceImpl implements DoctorService {
             doctor.setAvailableRegister(count);
 
         }
-        return list;
-    }
-
-    @Override
-    public int schedule(int doctorId, Date date, int[] num) {
-        // 0:fail
-        // 1:success
-        int res = 0;
-        Schedule schedule = scheduleMapper.selectSchedule(doctorId,date);
-
-        Schedule newSchedule = new Schedule(-1,doctorId,date,num[0],num[1],num[2]);
-
-        if(schedule == null){
-            res = scheduleMapper.insertSchedule(newSchedule);
-            logger.info("schedule: insert");
-        }else{
-            res = scheduleMapper.updateSchedule(newSchedule);
-            logger.info("schedule: update");
-        }
-        return res;
     }
 
 

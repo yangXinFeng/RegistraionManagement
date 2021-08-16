@@ -5,16 +5,14 @@
 <mapper namespace="com.xf.registration.dao.DoctorMapper">
 
     <select id="selectAllDoctor" resultMap="doctorResult">
-        select * from doc_doctor d join doc_part p on d.PART_CODE = p.PART_CODE
-        <where>
-            <if test="name != null">
-                d.NAME like "%"#{name}"%"
-            </if>
-        </where>
+        select * from doc_doctor d join doc_part p on d.PART_CODE = p.PART_CODE where is_valid = 1
+        <if test="name != null">
+            and d.NAME like "%"#{name}"%"
+        </if>
     </select>
 
     <select id="selectDoctorByPrimaryKey" resultMap="doctorResult">
-        select * from doc_doctor d join doc_part p on d.PART_CODE = p.PART_CODE where d.ID = #{id};
+        select * from doc_doctor d join doc_part p on d.PART_CODE = p.PART_CODE where d.ID = #{id} and is_valid = 1;
     </select>
 
     <resultMap id="doctorResult" type="com.xf.registration.pojo.Doctor">
@@ -32,5 +30,15 @@
             <result property="remark" column="REMARK"/>
         </association>
     </resultMap>
+
+<!--    <select id="getPassword" resultType="string">-->
+<!--        select password from doc_doctor where 1=1-->
+<!--            <if test="phone != null">-->
+<!--                and phone = #{phone}-->
+<!--            </if>-->
+<!--            <if test="doctorId != null">-->
+<!--                and ID = #{doctorId}-->
+<!--            </if>-->
+<!--    </select>-->
 
 </mapper>

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 @Service("registerService")
 public class RegisterServiceImpl implements RegisterService{
@@ -64,5 +65,15 @@ public class RegisterServiceImpl implements RegisterService{
 
         return res;
 
+    }
+
+    @Override
+    public List<Patient> queryPatientByDoctorAndDate(int doctorId, Date date) {
+        return registerMapper.queryPatientByDoctorAndDate(doctorId,date);
+    }
+
+    @Override
+    public List<Register> queryDoctorByPatient(int patientId) {
+        return registerMapper.queryDoctorByPatient(patientId);
     }
 }
