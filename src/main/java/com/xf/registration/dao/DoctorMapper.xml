@@ -15,6 +15,10 @@
         select * from doc_doctor d join doc_part p on d.PART_CODE = p.PART_CODE where d.ID = #{id} and is_valid = 1;
     </select>
 
+<!--    <select id="getPasswordByPhone" resultMap="doctorResult">-->
+<!--        select * from doc_doctor d join doc_part p on d.PART_CODE = p.PART_CODE where d.phone = #{phone} and is_valid = 1;-->
+<!--    </select>-->
+
     <resultMap id="doctorResult" type="com.xf.registration.pojo.Doctor">
         <id property="id" column="ID"/>
         <result property="name" column="NAME"/>

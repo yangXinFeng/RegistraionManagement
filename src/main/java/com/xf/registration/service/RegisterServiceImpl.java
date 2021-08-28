@@ -6,11 +6,13 @@ import com.xf.registration.pojo.Doctor;
 import com.xf.registration.pojo.Patient;
 import com.xf.registration.pojo.Register;
 import com.xf.registration.util.RedisUtil;
+import com.xf.registration.vo.PatientRecord;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -68,8 +70,17 @@ public class RegisterServiceImpl implements RegisterService{
     }
 
     @Override
-    public List<Patient> queryPatientByDoctorAndDate(int doctorId, Date date) {
-        return registerMapper.queryPatientByDoctorAndDate(doctorId,date);
+    public List<PatientRecord> queryPatientByDoctorAndDate(int doctorId, Date date) {
+        List<PatientRecord> res = new ArrayList<>();
+        for(int i=1;i<3;i++){
+            List<Patient> list1 = registerMapper.queryPatientByDoctorAndDate(doctorId,date,i);
+            String workTime = i==1?"上午":"下午";
+            for(Patient patient : list1){
+                PatientRecord patientRecord = new PatientRecord(patient.getName(),patient.getPhone(),workTime);
+                res.add(patientRecord);
+            }
+        }
+        return res;
     }
 
     @Override

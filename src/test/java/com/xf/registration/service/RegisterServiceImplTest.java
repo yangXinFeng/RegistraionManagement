@@ -2,11 +2,13 @@ package com.xf.registration.service;
 
 import com.xf.registration.pojo.Patient;
 import com.xf.registration.pojo.Register;
+import com.xf.registration.vo.PatientRecord;
 import org.apache.log4j.Logger;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -30,14 +32,14 @@ class RegisterServiceImplTest {
     }
 
     @Test
-    void queryPatientByDoctorAndDate(){
-        Date date = new Date();
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        calendar.add(Calendar.DATE,-1);
-        date = calendar.getTime();
-        List<Patient> list = registerService.queryPatientByDoctorAndDate(1,date);
-        for(Patient patient : list){
+    void queryPatientByDoctorAndDate() throws ParseException {
+        Date date = ft.parse("2021-8-15");;
+//        Calendar calendar = Calendar.getInstance();
+//        calendar.setTime(date);
+//        calendar.add(Calendar.DATE,-1);
+//        date = calendar.getTime();
+        List<PatientRecord> list = registerService.queryPatientByDoctorAndDate(1,date);
+        for(PatientRecord patient : list){
             logger.info(patient.toString());
         }
 

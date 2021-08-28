@@ -4,6 +4,7 @@ import com.xf.registration.pojo.Patient;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
+import java.util.Map;
 
 public interface PatientMapper {
 
@@ -19,6 +20,9 @@ public interface PatientMapper {
     @Select("select * from doc_patient where NAME like concat(\"%\",#{name},\"%\") and is_valid = 1 limit #{start},#{len};")
     List<Patient> selectAllPatientByName(@Param("name")String name, @Param("start") int start, @Param("len")int len);
 
+    @Select("select * from doc_patient where id = #{id}")
+    Patient selectPatientByPrimaryKey(int id);
+
     @Update("update doc_patient set name = #{name}, phone = #{phone}, address = #{address} where id = #{id}")
     int updatePatient(Patient patient);
 
@@ -27,8 +31,8 @@ public interface PatientMapper {
 
 //    String getPassword(String phone);
 //    String getPassword(@Param("id") int patientId);
-    @Select("Select password from doc_patient where phone = #{phone} and is_valid = 1")
-    String getPasswordByPhone(String phone);
+    @Select("Select id patientId,password from doc_patient where phone = #{phone} and is_valid = 1")
+    Map<String, Object> getPasswordByPhone(String phone);
     @Select("Select password from doc_patient where id = #{doctorId}")
     String getPasswordById(int doctorId);
 }

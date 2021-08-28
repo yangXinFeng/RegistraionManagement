@@ -2,19 +2,17 @@ package com.xf.registration.service;
 
 import com.xf.registration.pojo.Doctor;
 import com.xf.registration.pojo.Part;
+import com.xf.registration.vo.MonthSchedule;
 import org.apache.log4j.Logger;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import javax.annotation.Resource;
-
 import java.text.ParseException;
+import java.util.Calendar;
 import java.util.Date;
 import java.text.SimpleDateFormat;
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class DoctorServiceTest {
 
@@ -35,7 +33,7 @@ class DoctorServiceTest {
     @Test
     void queryDoctorByPartAndDate() throws ParseException {
 
-        Date date = new Date();//ft.parse("2018-1-22");
+        Date date = ft.parse("2018-1-22");
 //        Date date = new Date(2018-1900,1-1,22);
         logger.info(date.toString());
         List<Doctor> list = doctorService.queryDoctorByPartAndDate("00010001",date);
@@ -98,6 +96,23 @@ class DoctorServiceTest {
         int res = doctorService.updatePassword(doctor.getId(),"123456","654321");
         logger.info(res);
 
+    }
+
+    @Test
+    void querySchedules() throws ParseException {
+        Date date = ft.parse("2018-1-22");
+        Calendar calendar = Calendar.getInstance();
+        Date start,end;
+        calendar.setTime(date);
+        calendar.set(Calendar.DATE,1);
+        start = calendar.getTime();
+        calendar.set(Calendar.DATE,31);
+        end = calendar.getTime();
+        List<MonthSchedule> lists = doctorService.querySchedules(1,start,end);
+        for(MonthSchedule monthSchedule : lists){
+            logger.info(monthSchedule.toString());
+
+        }
     }
 
 }

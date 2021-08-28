@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
+import java.util.Map;
 
 public interface DoctorMapper {
 
@@ -30,8 +31,8 @@ public interface DoctorMapper {
     @Update("update doc_doctor set password = #{newPassword} where ID = #{id}")
     int updatePassword( @Param("id") int doctorId, @Param("newPassword") String newPassword);
 
-    @Select("Select password from doc_doctor where phone = #{phone}")
-    String getPasswordByPhone(String phone);
+    @Select("Select ID doctorId,password from doc_doctor where phone = #{phone} and is_valid = 1")
+    Map<String,Object> getPasswordByPhone(String phone);
     @Select("Select password from doc_doctor where ID = #{doctorId}")
     String getPasswordById(int doctorId);
 

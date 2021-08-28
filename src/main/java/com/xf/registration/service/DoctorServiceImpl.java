@@ -9,6 +9,7 @@ import com.xf.registration.pojo.Doctor;
 import com.xf.registration.pojo.Register;
 import com.xf.registration.pojo.Schedule;
 import com.xf.registration.util.RedisUtil;
+import com.xf.registration.vo.MonthSchedule;
 import org.apache.log4j.Logger;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -62,14 +63,14 @@ public class DoctorServiceImpl implements DoctorService {
             }else logger.info("find doctor by part from mysql,doctor size: null" );
         }
 
-        setAvailableRegisterForDoctor(list,date);
+        for(Doctor doctor : list){setAvailableRegisterForDoctor(doctor,date);}
         return list;
     }
 
     @Override
     public List<Doctor> queryDoctorByName(String name, Date date) {
         List<Doctor> list = doctorMapper.selectAllDoctor(name);
-        setAvailableRegisterForDoctor(list,date);
+        for(Doctor doctor : list){setAvailableRegisterForDoctor(doctor,date);}
 
         return list;
     }
@@ -77,6 +78,11 @@ public class DoctorServiceImpl implements DoctorService {
     @Override
     public List<Doctor> queryDoctorByName(String name) {
         return doctorMapper.selectAllDoctor(name);
+    }
+
+    @Override
+    public Doctor queryDoctorById(int doctorId) {
+        return doctorMapper.selectDoctorByPrimaryKey(doctorId);
     }
 
     @Override
@@ -92,9 +98,12 @@ public class DoctorServiceImpl implements DoctorService {
             res = scheduleMapper.insertSchedule(newSchedule);
             logger.info("schedule: insert");
         }else{
+            newSchedule.setId(schedule.getId());
             res = scheduleMapper.updateSchedule(newSchedule);
             logger.info("schedule: update");
         }
+        String key2 = "DoctorRegister:"+doctorId+":"+ft.format(date);
+        if(redisUtil.hasKey(key2)) redisUtil.del(key2);
         return res;
     }
 
@@ -126,60 +135,110 @@ public class DoctorServiceImpl implements DoctorService {
             logger.info("updatePassword:ing...");
         }
 
+
         return res;
     }
 
     @Override
-    public String getPassword(String phone) {
+    public Map<String,Object> getPassword(String phone) {
         return doctorMapper.getPasswordByPhone(phone);
     }
 
-    void setAvailableRegisterForDoctor(List<Doctor> list,Date date){
-        for(Doctor doctor : list){
-            int doctorId = doctor.getId();
-            int[] num = new int[3];
-            int[] count = new int[3];
+    @Override
+    public List<MonthSchedule> querySchedules(int doctorId, Date startDate, Date endDate) {
+        List<MonthSchedule> res = new ArrayList<>();
 
-            logger.info("doctorId: "+doctorId);
-            String key2 = "DoctorRegister:"+doctorId+":"+ft.format(date);
-            if(redisUtil.hasKey(key2)){
-                Map<Object,Object> map = redisUtil.hmget(key2);
-                Map<String,String> castMap = new HashMap();
-                for(Object o : map.keySet()){
-                    castMap.put((String) o,(String) map.get(o));
-                }
-                for(int i=0;i<3;i++){
-                    num[i] = Integer.parseInt(castMap.get("schedule:"+i)) ;
-                    count[i] = Integer.parseInt(castMap.get("available:"+i));
-                }
-                logger.info("find schedule and count from redis");
-            }else {
-                Schedule schedule = scheduleMapper.selectSchedule(doctor.getId(), date);
-                if(schedule == null) schedule = new Schedule();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(startDate);
+        int s = calendar.get(Calendar.DATE);
+        calendar.setTime(endDate);
+        int e = calendar.get(Calendar.DATE);
+        for(int day = s;day<e;day++){
+            calendar.set(Calendar.DATE,day);
+            Doctor doctor = setAvailableRegisterForDoctor(new Doctor(doctorId),calendar.getTime());
+            int[] num = doctor.getScheduleRegister();
+            int[] count = doctor.getAvailableRegister();
+            if (num[0] != 0 || num[1] != 0){
+                MonthSchedule monthSchedule = new MonthSchedule(doctorId,calendar.get(Calendar.YEAR),
+                    calendar.get(Calendar.MONTH)+1,calendar.get(Calendar.DATE) );
+                monthSchedule.setSchedule(num);
+                monthSchedule.setAvailable(count);
+                res.add(monthSchedule);
+            }
+        }
 
-                Register register = new Register();
-                register.setDate(date);
-                register.setDoctor(doctor);
-                for (int i = 0; i < 3; i++) {
-                    num[i] = schedule.getNum(i+1);
-                    register.setWorkTime(i+1);
-                    count[i] = num[i] - registerMapper.countRegister(register);
+//        List<Schedule> lists = scheduleMapper.selectSchedules(doctorId,startDate,endDate);
+//        Calendar calendar = Calendar.getInstance();
+//        for(Schedule schedule : lists){
+//            calendar.setTime(schedule.getDate());
+//            MouthSchedule mouthSchedule = new MouthSchedule(doctorId,calendar.get(Calendar.YEAR),
+//                    calendar.get(Calendar.MONTH)+1,calendar.get(Calendar.DATE) );
+//            int[] num = new int[3];
+//            int[] count = new int[3];
+//
+//            Register register = new Register();
+//            register.setDate(schedule.getDate());
+//            register.setDoctor(new Doctor(doctorId));
+//            for (int i = 0; i < 3; i++) {
+//                num[i] = schedule.getNum(i + 1);
+//                register.setWorkTime(i + 1);
+//                count[i] = num[i] - registerMapper.countRegister(register);
+//            }
+//
+//            mouthSchedule.setSchedule(num);
+//            mouthSchedule.setAvailable(count);
+//        }
+
+        return res;
+    }
+
+    Doctor setAvailableRegisterForDoctor(Doctor doctor,Date date){
+
+        int doctorId = doctor.getId();
+        int[] num = new int[3];
+        int[] count = new int[3];
+
+        logger.info("doctorId: "+doctorId);
+        String key2 = "DoctorRegister:"+doctorId+":"+ft.format(date);
+        if(redisUtil.hasKey(key2)){
+            Map<Object,Object> map = redisUtil.hmget(key2);
+            Map<String,String> castMap = new HashMap();
+            for(Object o : map.keySet()){
+                castMap.put((String) o,(String) map.get(o));
+            }
+            for(int i=0;i<3;i++){
+                num[i] = Integer.parseInt(castMap.get("schedule:"+i)) ;
+                count[i] = Integer.parseInt(castMap.get("available:"+i));
+            }
+            logger.info("find schedule and count from redis");
+        }else {
+            Schedule schedule = scheduleMapper.selectSchedule(doctor.getId(), date);
+            if(schedule == null) return doctor;
+
+            Register register = new Register();
+            register.setDate(date);
+            register.setDoctor(doctor);
+            for (int i = 0; i < 3; i++) {
+                num[i] = schedule.getNum(i+1);
+                register.setWorkTime(i+1);
+                count[i] = num[i] - registerMapper.countRegister(register);
 //                    count[i] = num[i] - registerMapper.countRegisterByDoctorAndDate(doctorId, date, i + 1);
 //                    redisTemplate.opsForHash().put(key2,"schedule:"+i,num[i]);
 //                    redisTemplate.opsForHash().put(key2,"available:"+i,count[i]);
-                    redisUtil.hset(key2,"schedule:"+i,num[i]+"");
-                    redisUtil.hset(key2,"available:"+i,count[i]+"");
-                }
-                redisUtil.expire(key2,1800);
-
-                logger.info("find schedule and count from sql");
+                redisUtil.hset(key2,"schedule:"+i,num[i]+"");
+                redisUtil.hset(key2,"available:"+i,count[i]+"");
             }
-            logger.info("schedule:" + num[0] + " " + num[1]);
-            logger.info("count:" + count[0] + " " + count[1]);
-            doctor.setScheduleRegister(num);
-            doctor.setAvailableRegister(count);
+            redisUtil.expire(key2,1800);
 
+            logger.info("find schedule and count from sql");
         }
+        logger.info("schedule:" + num[0] + " " + num[1]);
+        logger.info("count:" + count[0] + " " + count[1]);
+        doctor.setScheduleRegister(num);
+        doctor.setAvailableRegister(count);
+
+        return doctor;
+
     }
 
 

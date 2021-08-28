@@ -1,9 +1,11 @@
 package com.xf.registration.service;
 
 import com.xf.registration.pojo.Doctor;
+import com.xf.registration.vo.MonthSchedule;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public interface DoctorService {
 
@@ -13,6 +15,8 @@ public interface DoctorService {
 
     List<Doctor> queryDoctorByName(String name, Date date);
     List<Doctor> queryDoctorByName(String name);
+
+    Doctor queryDoctorById(int doctorId);
 
     int schedule(int doctorId,Date date,int[] num);
 
@@ -24,5 +28,7 @@ public interface DoctorService {
 
     int updatePassword(int doctorId, String oldPassword, String newPassword);
 
-    String getPassword(String phone);
+    Map<String,Object> getPassword(String phone);
+
+    List<MonthSchedule> querySchedules(int doctorId, Date startDate, Date endDate);
 }

@@ -9,6 +9,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import javax.jnlp.ClipboardService;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -59,5 +60,20 @@ class PatientServiceTest {
 //        logger.info(patientService.getPassword(patient.getPhone()));
 //
 //        patientService.deletePatient(patient.getId());
+    }
+
+    @Test
+    void querryPatientById(){
+        logger.info(patientService.querryPatientById(1).toString());
+    }
+
+    @Test
+    void getPassword(){
+        Map<String , Object> map = patientService.getPassword("12345678901");
+        for(String key : map.keySet()){
+            logger.info(key);
+            logger.info(map.get(key));
+        }
+
     }
 }

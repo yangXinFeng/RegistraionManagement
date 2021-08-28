@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Map;
 
 @Service("patientService")
 public class PatientServiceImpl implements PatientService {
@@ -24,6 +25,11 @@ public class PatientServiceImpl implements PatientService {
     @Override
     public List<Patient> queryAllPatient(String name, int start, int len) {
         return patientMapper.selectAllPatientByName(name,start,len);
+    }
+
+    @Override
+    public Patient querryPatientById(int patientId) {
+        return patientMapper.selectPatientByPrimaryKey(patientId);
     }
 
     @Override
@@ -57,7 +63,7 @@ public class PatientServiceImpl implements PatientService {
     }
 
     @Override
-    public String getPassword(String phone) {
+    public Map<String, Object> getPassword(String phone) {
         return patientMapper.getPasswordByPhone(phone);
     }
 }

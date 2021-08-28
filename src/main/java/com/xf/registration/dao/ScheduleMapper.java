@@ -17,6 +17,9 @@ public interface ScheduleMapper {
     @Select("select * from doc_schedule where doctor_Id = #{doctorId} and DATE = #{date,jdbcType=DATE};")
     Schedule selectSchedule(@Param("doctorId") int doctorId,@Param("date") Date date);
 
-    @Update("update doc_register set num1 = #{num[0]}, num2 = {num[1]} ,num3 = {num[2]} where ID = #{id};")
+    @Update("update doc_schedule set num1 = #{num1}, num2 = #{num2} ,num3 = #{num3} where ID = #{id};")
     int updateSchedule(Schedule schedule);
+
+    @Select("select * from doc_schedule where doctor_Id = #{doctorId} and DATE between #{date1,jdbcType=DATE} and #{date2,jdbcType=DATE};")
+    List<Schedule> selectSchedules(@Param("doctorId") int doctorId,@Param("date1") Date startDate,@Param("date2") Date endDate);
 }
